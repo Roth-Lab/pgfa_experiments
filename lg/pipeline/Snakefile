@@ -27,6 +27,7 @@ run_template = os.path.join(
 
 results_template = os.path.join(out_dir, "{run}", "results.tsv.gz")
 
+
 def load_run_files(wildcards):
     files = []
     run_config = config['run_config'][wildcards.run]

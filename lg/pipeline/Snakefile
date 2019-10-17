@@ -49,6 +49,8 @@ def load_run_files(wildcards):
     return files
 
 # Workflow
+localrules: all, write_run_config
+
 rule all:
     input:
         expand(results_template, run=config['runs'].keys())
@@ -107,7 +109,6 @@ rule run_sampler:
         "-s {params.sampler_id} "
         "-o {output} "
         "--seed {params.seed} "
-
 
 rule merge_results:
     input:

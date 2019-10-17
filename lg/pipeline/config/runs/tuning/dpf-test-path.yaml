@@ -1,0 +1,48 @@
+data:
+  D: 10
+  K: 20
+  N: 100
+  alpha: 2
+  prop_missing: 0.1
+  tau_v: 0.25
+  tau_x: 25
+model:
+  K: 20
+run:
+  max_time: 1000
+  num_datasets: 4
+  num_init_params: 4
+  num_restarts: 5
+sampler:
+  dpf-test_path-conditional:
+    annealing_power: 1.0
+    num_particles: 20
+    test_path: conditional
+    updater: dpf
+  dpf-test_path-ones:
+    annealing_power: 1.0
+    num_particles: 20
+    test_path: ones
+    updater: dpf
+  dpf-test_path-random:
+    annealing_power: 1.0
+    num_particles: 20
+    test_path: random
+    updater: dpf
+  dpf-test_path-two-stage:
+    annealing_power: 1.0
+    num_particles: 20
+    test_path: two-stage
+    updater: dpf
+  dpf-test_path-unconditional:
+    annealing_power: 1.0
+    num_particles: 20
+    test_path: unconditional
+    updater: dpf
+  dpf-test_path-zeros:
+    annealing_power: 1.0
+    num_particles: 20
+    test_path: zeros
+    updater: dpf
+  gibbs:
+    updater: g

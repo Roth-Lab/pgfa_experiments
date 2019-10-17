@@ -1,0 +1,18 @@
+sampler_contrast:
+  pg:
+    test_path:
+    - conditional
+    - ones
+    - random
+    - two-stage
+    - unconditional
+    - zeros
+sampler_shared:
+  pg:
+    annealing_power: 1.0
+    num_particles: 20
+    resample_scheme: multinomial
+    resample_threshold: 0.5
+sampler:
+  gibbs:
+    updater: g

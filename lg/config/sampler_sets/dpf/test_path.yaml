@@ -1,0 +1,16 @@
+sampler_contrast:
+  dpf:
+    test_path:
+    - conditional
+    - ones
+    - random
+    - two-stage
+    - unconditional
+    - zeros
+sampler_shared:
+  dpf:
+    annealing_power: 1.0
+    num_particles: 20
+sampler:
+  gibbs:
+    updater: g

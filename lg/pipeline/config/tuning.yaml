@@ -1,0 +1,15 @@
+runs:
+  dpf-annealing-power:
+    config_file: config/runs/tuning/dpf-annealing-power.yaml
+  dpf-num-particles:
+    config_file: config/runs/tuning/dpf-num-particles.yaml
+  dpf-test-path:
+    config_file: config/runs/tuning/dpf-test-path.yaml
+  pg-annealing-power:
+    config_file: config/runs/tuning/pg-annealing-power.yaml
+  pg-num-particles:
+    config_file: config/runs/tuning/pg-num-particles.yaml
+  pg-resample-threshold:
+    config_file: config/runs/tuning/pg-resample-threshold.yaml
+  pg-test-path:
+    config_file: config/runs/tuning/pg-test-path.yaml

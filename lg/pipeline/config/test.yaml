@@ -1,0 +1,4 @@
+test1:
+  config_file: config/runs/test.yaml
+test2:
+  config_file: config/runs/test.yamll

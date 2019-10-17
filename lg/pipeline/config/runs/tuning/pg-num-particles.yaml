@@ -1,0 +1,60 @@
+data:
+  D: 10
+  K: 20
+  N: 100
+  alpha: 2
+  prop_missing: 0.1
+  tau_v: 0.25
+  tau_x: 25
+model:
+  K: 20
+run:
+  max_time: 1000
+  num_datasets: 4
+  num_init_params: 4
+  num_restarts: 5
+sampler:
+  gibbs:
+    updater: g
+  pg-num_particles-10:
+    annealing_power: 1.0
+    num_particles: 10
+    resample_scheme: multinomial
+    resample_threshold: 0.5
+    test_path: zeros
+    updater: pg
+  pg-num_particles-100:
+    annealing_power: 1.0
+    num_particles: 100
+    resample_scheme: multinomial
+    resample_threshold: 0.5
+    test_path: zeros
+    updater: pg
+  pg-num_particles-2:
+    annealing_power: 1.0
+    num_particles: 2
+    resample_scheme: multinomial
+    resample_threshold: 0.5
+    test_path: zeros
+    updater: pg
+  pg-num_particles-20:
+    annealing_power: 1.0
+    num_particles: 20
+    resample_scheme: multinomial
+    resample_threshold: 0.5
+    test_path: zeros
+    updater: pg
+  pg-num_particles-5:
+    annealing_power: 1.0
+    num_particles: 5
+    resample_scheme: multinomial
+    resample_threshold: 0.5
+    test_path: zeros
+    updater: pg
+  pg-num_particles-50:
+    annealing_power: 1.0
+    num_particles: 50
+    resample_scheme: multinomial
+    resample_threshold: 0.5
+    test_path: zeros
+    updater: pg

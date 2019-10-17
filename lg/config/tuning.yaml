@@ -1,0 +1,21 @@
+dpf-annealing-power:
+  data_set: tuning
+  sampler_set: dpf/annealing_power
+dpf-num-particles:
+  data_set: tuning
+  sampler_set: dpf/num_particles
+dpf-test-path:
+  data_set: tuning
+  sampler_set: dpf/test_path
+pg-annealing-power:
+  data_set: tuning
+  sampler_set: pg/annealing_power
+pg-num-particles:
+  data_set: tuning
+  sampler_set: pg/num_particles
+pg-resample-threshold:
+  data_set: tuning
+  sampler_set: pg/resample_threshold
+pg-test-path:
+  data_set: tuning
+  sampler_set: pg/test_path

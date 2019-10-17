@@ -1,0 +1,34 @@
+data:
+  D: 10
+  K: 5
+  N: 100
+  alpha: 2
+  prop_missing: 0.1
+  tau_v: 0.25
+  tau_x: 25  
+model:
+  K: 5
+run:
+  max_time: 2
+  num_datasets: 2
+  num_init_params: 2
+  num_restarts: 2
+sampler:
+  gibbs:
+    updater: g
+  row-gibbs:
+    updater: rg
+  pg:
+    updater: pg
+    kwargs:
+      annealing_power: 1.0
+      num_particles: 20
+      resample_scheme: stratified
+      resample_threshold: 0.5
+      test_path: zeros
+  dpf:
+    updater: dpf
+    kwargs:
+      annealing_power: 1.0
+      num_particles: 20
+      test_path: zeros

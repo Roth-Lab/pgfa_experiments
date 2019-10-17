@@ -1,0 +1,14 @@
+sampler_contrast:
+  dpf:
+    annealing_power:
+    - 0.0
+    - 1.0
+    - 2.0
+    - 3.0
+sampler_shared:
+  dpf:
+    num_particles: 20
+    test_path: zeros
+sampler:
+  gibbs:
+    updater: g

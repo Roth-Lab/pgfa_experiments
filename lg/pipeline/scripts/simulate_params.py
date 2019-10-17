@@ -6,7 +6,7 @@ import yaml
 
 def main(args):
     with open(args.config_file, 'r') as fh:
-        config = yaml.load(fh, Loader=yaml.FullLoader)['data']
+        config = yaml.load(fh, Loader=yaml.FullLoader)
 
     if args.seed is not None:
         np.random.seed(args.seed)
@@ -15,9 +15,9 @@ def main(args):
         alpha=1.0,
         tau_v=1.0,
         tau_x=1.0,
-        D=config['D'],
-        K=config['K'],
-        N=config['N']
+        D=config['data']['D'],
+        K=config['model']['K'],
+        N=config['data']['N']
     )
 
     with h5py.File(args.out_file, 'w') as fh:

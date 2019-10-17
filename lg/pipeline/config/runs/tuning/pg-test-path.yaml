@@ -17,44 +17,50 @@ sampler:
   gibbs:
     updater: g
   pg-test_path-conditional:
-    annealing_power: 1.0
-    num_particles: 20
-    resample_scheme: multinomial
-    resample_threshold: 0.5
-    test_path: conditional
+    kwargs:
+      annealing_power: 1.0
+      num_particles: 20
+      resample_scheme: multinomial
+      resample_threshold: 0.5
+      test_path: conditional
     updater: pg
   pg-test_path-ones:
-    annealing_power: 1.0
-    num_particles: 20
-    resample_scheme: multinomial
-    resample_threshold: 0.5
-    test_path: ones
+    kwargs:
+      annealing_power: 1.0
+      num_particles: 20
+      resample_scheme: multinomial
+      resample_threshold: 0.5
+      test_path: ones
     updater: pg
   pg-test_path-random:
-    annealing_power: 1.0
-    num_particles: 20
-    resample_scheme: multinomial
-    resample_threshold: 0.5
-    test_path: random
+    kwargs:
+      annealing_power: 1.0
+      num_particles: 20
+      resample_scheme: multinomial
+      resample_threshold: 0.5
+      test_path: random
     updater: pg
   pg-test_path-two-stage:
-    annealing_power: 1.0
-    num_particles: 20
-    resample_scheme: multinomial
-    resample_threshold: 0.5
-    test_path: two-stage
+    kwargs:
+      annealing_power: 1.0
+      num_particles: 20
+      resample_scheme: multinomial
+      resample_threshold: 0.5
+      test_path: two-stage
     updater: pg
   pg-test_path-unconditional:
-    annealing_power: 1.0
-    num_particles: 20
-    resample_scheme: multinomial
-    resample_threshold: 0.5
-    test_path: unconditional
+    kwargs:
+      annealing_power: 1.0
+      num_particles: 20
+      resample_scheme: multinomial
+      resample_threshold: 0.5
+      test_path: unconditional
     updater: pg
   pg-test_path-zeros:
-    annealing_power: 1.0
-    num_particles: 20
-    resample_scheme: multinomial
-    resample_threshold: 0.5
-    test_path: zeros
+    kwargs:
+      annealing_power: 1.0
+      num_particles: 20
+      resample_scheme: multinomial
+      resample_threshold: 0.5
+      test_path: zeros
     updater: pg

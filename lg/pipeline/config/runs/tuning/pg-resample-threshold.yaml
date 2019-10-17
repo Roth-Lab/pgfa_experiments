@@ -17,37 +17,42 @@ sampler:
   gibbs:
     updater: g
   pg-resample_threshold-0.0:
-    annealing_power: 1.0
-    num_particles: 20
-    resample_scheme: multinomial
-    resample_threshold: 0.0
-    test_path: zeros
+    kwargs:
+      annealing_power: 1.0
+      num_particles: 20
+      resample_scheme: multinomial
+      resample_threshold: 0.0
+      test_path: zeros
     updater: pg
   pg-resample_threshold-0.25:
-    annealing_power: 1.0
-    num_particles: 20
-    resample_scheme: multinomial
-    resample_threshold: 0.25
-    test_path: zeros
+    kwargs:
+      annealing_power: 1.0
+      num_particles: 20
+      resample_scheme: multinomial
+      resample_threshold: 0.25
+      test_path: zeros
     updater: pg
   pg-resample_threshold-0.5:
-    annealing_power: 1.0
-    num_particles: 20
-    resample_scheme: multinomial
-    resample_threshold: 0.5
-    test_path: zeros
+    kwargs:
+      annealing_power: 1.0
+      num_particles: 20
+      resample_scheme: multinomial
+      resample_threshold: 0.5
+      test_path: zeros
     updater: pg
   pg-resample_threshold-0.75:
-    annealing_power: 1.0
-    num_particles: 20
-    resample_scheme: multinomial
-    resample_threshold: 0.75
-    test_path: zeros
+    kwargs:
+      annealing_power: 1.0
+      num_particles: 20
+      resample_scheme: multinomial
+      resample_threshold: 0.75
+      test_path: zeros
     updater: pg
   pg-resample_threshold-1.0:
-    annealing_power: 1.0
-    num_particles: 20
-    resample_scheme: multinomial
-    resample_threshold: 1.0
-    test_path: zeros
+    kwargs:
+      annealing_power: 1.0
+      num_particles: 20
+      resample_scheme: multinomial
+      resample_threshold: 1.0
+      test_path: zeros
     updater: pg

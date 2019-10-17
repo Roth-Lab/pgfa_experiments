@@ -17,30 +17,34 @@ sampler:
   gibbs:
     updater: g
   pg-annealing_power-0.0:
-    annealing_power: 0.0
-    num_particles: 20
-    resample_scheme: multinomial
-    resample_threshold: 0.5
-    test_path: zeros
+    kwargs:
+      annealing_power: 0.0
+      num_particles: 20
+      resample_scheme: multinomial
+      resample_threshold: 0.5
+      test_path: zeros
     updater: pg
   pg-annealing_power-1.0:
-    annealing_power: 1.0
-    num_particles: 20
-    resample_scheme: multinomial
-    resample_threshold: 0.5
-    test_path: zeros
+    kwargs:
+      annealing_power: 1.0
+      num_particles: 20
+      resample_scheme: multinomial
+      resample_threshold: 0.5
+      test_path: zeros
     updater: pg
   pg-annealing_power-2.0:
-    annealing_power: 2.0
-    num_particles: 20
-    resample_scheme: multinomial
-    resample_threshold: 0.5
-    test_path: zeros
+    kwargs:
+      annealing_power: 2.0
+      num_particles: 20
+      resample_scheme: multinomial
+      resample_threshold: 0.5
+      test_path: zeros
     updater: pg
   pg-annealing_power-3.0:
-    annealing_power: 3.0
-    num_particles: 20
-    resample_scheme: multinomial
-    resample_threshold: 0.5
-    test_path: zeros
+    kwargs:
+      annealing_power: 3.0
+      num_particles: 20
+      resample_scheme: multinomial
+      resample_threshold: 0.5
+      test_path: zeros
     updater: pg

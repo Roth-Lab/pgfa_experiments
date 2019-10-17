@@ -17,44 +17,50 @@ sampler:
   gibbs:
     updater: g
   pg-num_particles-10:
-    annealing_power: 1.0
-    num_particles: 10
-    resample_scheme: multinomial
-    resample_threshold: 0.5
-    test_path: zeros
+    kwargs:
+      annealing_power: 1.0
+      num_particles: 10
+      resample_scheme: multinomial
+      resample_threshold: 0.5
+      test_path: zeros
     updater: pg
   pg-num_particles-100:
-    annealing_power: 1.0
-    num_particles: 100
-    resample_scheme: multinomial
-    resample_threshold: 0.5
-    test_path: zeros
+    kwargs:
+      annealing_power: 1.0
+      num_particles: 100
+      resample_scheme: multinomial
+      resample_threshold: 0.5
+      test_path: zeros
     updater: pg
   pg-num_particles-2:
-    annealing_power: 1.0
-    num_particles: 2
-    resample_scheme: multinomial
-    resample_threshold: 0.5
-    test_path: zeros
+    kwargs:
+      annealing_power: 1.0
+      num_particles: 2
+      resample_scheme: multinomial
+      resample_threshold: 0.5
+      test_path: zeros
     updater: pg
   pg-num_particles-20:
-    annealing_power: 1.0
-    num_particles: 20
-    resample_scheme: multinomial
-    resample_threshold: 0.5
-    test_path: zeros
+    kwargs:
+      annealing_power: 1.0
+      num_particles: 20
+      resample_scheme: multinomial
+      resample_threshold: 0.5
+      test_path: zeros
     updater: pg
   pg-num_particles-5:
-    annealing_power: 1.0
-    num_particles: 5
-    resample_scheme: multinomial
-    resample_threshold: 0.5
-    test_path: zeros
+    kwargs:
+      annealing_power: 1.0
+      num_particles: 5
+      resample_scheme: multinomial
+      resample_threshold: 0.5
+      test_path: zeros
     updater: pg
   pg-num_particles-50:
-    annealing_power: 1.0
-    num_particles: 50
-    resample_scheme: multinomial
-    resample_threshold: 0.5
-    test_path: zeros
+    kwargs:
+      annealing_power: 1.0
+      num_particles: 50
+      resample_scheme: multinomial
+      resample_threshold: 0.5
+      test_path: zeros
     updater: pg

@@ -74,11 +74,13 @@ def load_contrast(config):
             for value in config['sampler_contrast'][sampler_type][sampler_param]:
                 sampler_id = '{0}-{1}-{2}'.format(sampler_type, sampler_param, value)
 
-                sampler_config = shared_config[sampler_type].copy()
+                sampler_config = {}
 
                 sampler_config['updater'] = sampler_type
 
-                sampler_config[sampler_param] = value
+                sampler_config['kwargs'] = shared_config[sampler_type].copy()
+
+                sampler_config['kwargs'][sampler_param] = value
 
                 sampler_configs[sampler_id] = sampler_config
 

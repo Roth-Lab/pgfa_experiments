@@ -15,24 +15,28 @@ run:
   num_restarts: 5
 sampler:
   dpf-annealing_power-0.0:
-    annealing_power: 0.0
-    num_particles: 20
-    test_path: zeros
+    kwargs:
+      annealing_power: 0.0
+      num_particles: 20
+      test_path: zeros
     updater: dpf
   dpf-annealing_power-1.0:
-    annealing_power: 1.0
-    num_particles: 20
-    test_path: zeros
+    kwargs:
+      annealing_power: 1.0
+      num_particles: 20
+      test_path: zeros
     updater: dpf
   dpf-annealing_power-2.0:
-    annealing_power: 2.0
-    num_particles: 20
-    test_path: zeros
+    kwargs:
+      annealing_power: 2.0
+      num_particles: 20
+      test_path: zeros
     updater: dpf
   dpf-annealing_power-3.0:
-    annealing_power: 3.0
-    num_particles: 20
-    test_path: zeros
+    kwargs:
+      annealing_power: 3.0
+      num_particles: 20
+      test_path: zeros
     updater: dpf
   gibbs:
     updater: g

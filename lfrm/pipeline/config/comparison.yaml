@@ -1,0 +1,8 @@
+runs:
+  finite_5:
+    config_file: config/runs/comparison/finite_5.yaml
+  finite_20:
+    config_file: config/runs/comparison/finite_20.yaml
+  ibp_20:
+    config_file: config/runs/comparison/ibp_20.yaml
+    

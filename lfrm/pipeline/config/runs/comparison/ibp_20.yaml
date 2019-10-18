@@ -1,0 +1,32 @@
+data:
+  K: 20
+  N: 100
+  alpha: 2
+  prop_missing: 0.05
+  symmetric: false
+  tau: 0.25
+model:
+  K: null
+  symmetric: false
+run:
+  max_time: 10000
+  num_datasets: 4
+  num_init_params: 4
+  num_restarts: 5
+sampler:
+  gibbs:
+    updater: g
+  pg:
+    updater: pg
+    kwargs:
+      annealing_power: 1.0
+      num_particles: 20
+      resample_scheme: multinomial
+      resample_threshold: 0.5
+      test_path: zeros
+  dpf:
+    updater: dpf
+    kwargs:
+      annealing_power: 1.0
+      num_particles: 20
+      test_path: zeros

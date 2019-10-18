@@ -1,0 +1,7 @@
+runs:
+  finite_4:
+    config_file: config/runs/finite_4.yaml
+  finite_8:
+    config_file: config/runs/finite_8.yaml
+  finite_12:
+    config_file: config/runs/finite_12.yaml    

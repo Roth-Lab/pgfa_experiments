@@ -1,0 +1,31 @@
+data:
+  D: 4
+  K: 4
+  N: 200
+  alpha: 2
+model:
+  K: 4
+run:
+  max_time: 10000
+  num_datasets: 4
+  num_init_params: 4
+  num_restarts: 5
+sampler:
+  gibbs:
+    updater: g
+  row-gibbs:
+    updater: rg    
+  pg:
+    updater: pg
+    kwargs:
+      annealing_power: 1.0
+      num_particles: 20
+      resample_scheme: multinomial
+      resample_threshold: 0.5
+      test_path: zeros
+  dpf:
+    updater: dpf
+    kwargs:
+      annealing_power: 1.0
+      num_particles: 20
+      test_path: zeros

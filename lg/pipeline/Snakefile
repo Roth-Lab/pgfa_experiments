@@ -49,6 +49,7 @@ def load_run_files(wildcards):
         )
     return files
 
+
 # Workflow
 localrules: all, write_run_config
 
@@ -72,7 +73,7 @@ rule simulate_data:
     output:
         data_template
     params:
-        seed="{dataset}"
+        seed = "{dataset}"
     shell:
         "python scripts/simulate_data.py "
         "-c {input} "
@@ -85,7 +86,7 @@ rule simulate_params:
     output:
         params_template
     params:
-        seed="{params}"
+        seed = "{params}"
     shell:
         "python scripts/simulate_params.py "
         "-c {input} "
@@ -94,12 +95,12 @@ rule simulate_params:
 
 rule run_sampler:
     input:
-        config=run_config_template,
-        data=data_template,
-        params=params_template
+        config = run_config_template,
+        data = data_template,
+        params = params_template
     params:
-        sampler_id="{sampler}",
-        seed="{restart}"
+        sampler_id = "{sampler}",
+        seed = "{restart}"
     output:
         temp(run_template)
     shell:

@@ -5,7 +5,7 @@ data:
   alpha: 2
   prop_missing: 0.1
   tau_v: 0.25
-  tau_x: 25  
+  tau_x: 25
 model:
   K: 5
 run:
@@ -14,6 +14,9 @@ run:
   num_init_params: 2
   num_restarts: 2
 sampler:
+  gibbs-annealed:
+    annealing_steps: 1000
+    updater: g
   gibbs:
     updater: g
   row-gibbs:

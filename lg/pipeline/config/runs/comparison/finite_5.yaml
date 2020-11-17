@@ -16,6 +16,9 @@ run:
 sampler:
   gibbs:
     updater: g
+  gibbs-annealed:
+    annealing_steps: 1000
+    updater: g    
   row-gibbs:
     updater: rg
   pg:

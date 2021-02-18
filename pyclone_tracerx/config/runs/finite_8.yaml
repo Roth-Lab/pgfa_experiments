@@ -6,8 +6,6 @@ run:
 sampler:
   gibbs:
     updater: g
-  row-gibbs:
-    updater: rg
   pg:
     updater: pg
     kwargs:

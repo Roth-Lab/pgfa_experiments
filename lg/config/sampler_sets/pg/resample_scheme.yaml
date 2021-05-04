@@ -1,0 +1,14 @@
+sampler_contrast:
+  pg:
+    resample_scheme:
+      - multinomial
+      - stratified
+sampler_shared:
+  pg:
+    annealing_power: 1.0
+    num_particles: 20
+    test_path: zeros
+    resample_threshold: 0.5
+sampler:
+  gibbs:
+    updater: g

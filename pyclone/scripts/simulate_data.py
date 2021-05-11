@@ -1,8 +1,9 @@
 import numpy as np
 import pandas as pd
-import pgfa.models.pyclone.binomial
 import scipy.stats
 import yaml
+
+import pgfa.models.pyclone.binomial
 
 
 def main(args):

@@ -4,16 +4,17 @@ os.environ['NUMBA_NUM_THREADS'] = '1'
 os.environ['MKL_NUM_THREADS'] = '1'
 os.environ['OMP_NUM_THREADS'] = '1'
 
-from pgfa.utils import Timer
-
 import h5py
 import numpy as np
 import pandas as pd
+import yaml
+
+from pgfa.utils import Timer
+
 import pgfa.feature_allocation_distributions
 import pgfa.models.pyclone.binomial
 import pgfa.models.pyclone.singletons_updates
 import pgfa.utils
-import yaml
 
 
 def main(args):
@@ -118,11 +119,11 @@ def load_data_file(file_name):
 def load_params(file_name):
     with h5py.File(file_name, 'r') as fh:
         params = pgfa.models.pyclone.binomial.Parameters(
-            fh['alpha'].value,
+            fh['alpha'][()],
             np.ones(2),
-            fh['V'].value,
+            fh['V'][()],
             np.ones(2),
-            fh['Z'].value
+            fh['Z'][()]
         )
 
     return params

@@ -1,12 +1,16 @@
+import h5py
+import pandas as pd
+import numpy as np
+import os
 import yaml
+
+from pgfa.utils import Timer
+
 import pgfa.utils
 import pgfa.models.linear_gaussian
 import pgfa.feature_allocation_distributions
-import pandas as pd
-import numpy as np
-import h5py
-from pgfa.utils import Timer
-import os
+
+
 os.environ["NUMEXPR_NUM_THREADS"] = "1"
 os.environ["NUMBA_NUM_THREADS"] = "1"
 os.environ["MKL_NUM_THREADS"] = "1"

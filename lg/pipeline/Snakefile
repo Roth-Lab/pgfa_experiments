@@ -72,6 +72,8 @@ rule simulate_data:
         run_config_template
     output:
         data_template
+    conda:
+        "envs/pgfa.yaml"
     params:
         seed = "{dataset}"
     shell:
@@ -85,6 +87,8 @@ rule simulate_params:
         run_config_template
     output:
         params_template
+    conda:
+        "envs/pgfa.yaml"
     params:
         seed = "{params}"
     shell:
@@ -98,11 +102,13 @@ rule run_sampler:
         config = run_config_template,
         data = data_template,
         params = params_template
+    output:
+        temp(run_template)
+    conda:
+        "envs/pgfa.yaml"
     params:
         sampler_id = "{sampler}",
         seed = "{restart}"
-    output:
-        temp(run_template)
     shell:
         "python scripts/run_sampler.py "
         "-c {input.config} "
@@ -117,5 +123,7 @@ rule merge_results:
         load_run_files
     output:
         results_template
+    conda:
+        "envs/pgfa.yaml"
     shell:
         "python scripts/merge_results.py -i {input} -o {output}"

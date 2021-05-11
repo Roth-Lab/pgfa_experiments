@@ -1,7 +1,8 @@
 import h5py
 import numpy as np
-import pgfa.models.linear_gaussian
 import yaml
+
+import pgfa.models.linear_gaussian
 
 
 def main(args):

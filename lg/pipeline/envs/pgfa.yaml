@@ -10,4 +10,4 @@ dependencies:
   - scipy
   - pip
   - pip:
-      - "git+ssh://git@github.com/Roth-Lab/pgfa.git@0.3.2"
+      - "git+ssh://git@github.com/Roth-Lab/pgfa.git@0.3.3"

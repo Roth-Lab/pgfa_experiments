@@ -1,7 +1,8 @@
 import h5py
 import numpy as np
-import pgfa.models.lfrm
 import yaml
+
+import pgfa.models.lfrm
 
 
 def main(args):

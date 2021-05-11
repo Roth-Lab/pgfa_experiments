@@ -4,15 +4,16 @@ os.environ['NUMBA_NUM_THREADS'] = '1'
 os.environ['MKL_NUM_THREADS'] = '1'
 os.environ['OMP_NUM_THREADS'] = '1'
 
-from pgfa.utils import Timer
-
 import h5py
 import numpy as np
 import pandas as pd
+import yaml
+
+from pgfa.utils import Timer
+
 import pgfa.feature_allocation_distributions
 import pgfa.models.lfrm
 import pgfa.utils
-import yaml
 
 
 def main(args):
@@ -23,7 +24,7 @@ def main(args):
         pgfa.utils.set_seed(args.seed)
 
     with h5py.File(args.data_file, 'r') as fh:
-        data_true = fh['data_true'].value
+        data_true = fh['data_true'][()]
 
     params_true = load_params(args.data_file)
 
@@ -51,7 +52,7 @@ def main(args):
 
 def get_model(data_file, num_features, params_file=None, symmetric=False):
     with h5py.File(data_file, 'r') as fh:
-        data = fh['data'].value
+        data = fh['data'][()]
 
     if params_file is not None:
         params = load_params(params_file)
@@ -85,12 +86,12 @@ def get_model_updater(config, num_features):
 def load_params(file_name):
     with h5py.File(file_name, 'r') as fh:
         params = pgfa.models.lfrm.Parameters(
-            fh['alpha'].value,
+            fh['alpha'][()],
             np.ones(2),
-            fh['tau'].value,
+            fh['tau'][()],
             np.ones(2),
-            fh['V'].value,
-            fh['Z'].value
+            fh['V'][()],
+            fh['Z'][()]
         )
 
     return params

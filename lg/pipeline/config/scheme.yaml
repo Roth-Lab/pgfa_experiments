@@ -1,0 +1,3 @@
+runs:
+  pg-resample-scheme:
+    config_file: config/runs/tuning/pg-resample-scheme.yaml

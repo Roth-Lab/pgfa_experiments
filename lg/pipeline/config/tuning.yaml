@@ -9,6 +9,8 @@ runs:
     config_file: config/runs/tuning/pg-annealing-power.yaml
   pg-num-particles:
     config_file: config/runs/tuning/pg-num-particles.yaml
+  pg-resample-scheme:
+    config_file: config/runs/tuning/pg-resample-scheme.yaml
   pg-resample-threshold:
     config_file: config/runs/tuning/pg-resample-threshold.yaml
   pg-test-path:

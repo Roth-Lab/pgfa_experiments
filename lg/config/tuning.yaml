@@ -16,6 +16,9 @@ pg-num-particles:
 pg-resample-threshold:
   data_set: tuning
   sampler_set: pg/resample_threshold
+pg-resample-scheme:
+  data_set: tuning
+  sampler_set: pg/resample_scheme
 pg-test-path:
   data_set: tuning
   sampler_set: pg/test_path

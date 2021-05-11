@@ -1,17 +1,20 @@
-import yaml
-import pgfa.utils
-import pgfa.models.pyclone.singletons_updates
-import pgfa.models.pyclone.binomial
-import pgfa.feature_allocation_distributions
-import pandas as pd
-import numpy as np
-import h5py
-from pgfa.utils import Timer
 import os
 os.environ['NUMEXPR_NUM_THREADS'] = '1'
 os.environ['NUMBA_NUM_THREADS'] = '1'
 os.environ['MKL_NUM_THREADS'] = '1'
 os.environ['OMP_NUM_THREADS'] = '1'
+
+import h5py
+import pandas as pd
+import numpy as np
+import yaml
+
+from pgfa.utils import Timer
+
+import pgfa.utils
+import pgfa.models.pyclone.singletons_updates
+import pgfa.models.pyclone.binomial
+import pgfa.feature_allocation_distributions
 
 
 def main(args):

@@ -66,6 +66,8 @@ rule write_run_config:
         lambda wildcards: config['runs'][wildcards.run]['config_file']
     output:
         run_config_template
+    conda:
+        "envs/pgfa.yaml"
     shell:
         "cp {input} {output}"
 
@@ -75,6 +77,8 @@ rule run_sampler:
         data = data_template
     output:
         temp(run_template)
+    conda:
+        "envs/pgfa.yaml"
     params:
         sampler_id = "{sampler}",
         seed = "{restart}"
@@ -93,6 +97,8 @@ rule merge_results:
         load_run_files
     output:
         results_template
+    conda:
+        "envs/pgfa.yaml"        
     conda:
         "envs/pgfa.yaml"
     shell:

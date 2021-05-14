@@ -1,24 +1,21 @@
-import os
-os.environ['NUMEXPR_NUM_THREADS'] = '1'
-os.environ['NUMBA_NUM_THREADS'] = '1'
-os.environ['MKL_NUM_THREADS'] = '1'
-os.environ['OMP_NUM_THREADS'] = '1'
-
-import h5py
-import pandas as pd
-import numpy as np
-import yaml
-
-from pgfa.utils import Timer
-
-import pgfa.utils
-import pgfa.models.pyclone.singletons_updates
-import pgfa.models.pyclone.binomial
 import pgfa.feature_allocation_distributions
+import pgfa.models.pyclone.binomial
+import pgfa.models.pyclone.singletons_updates
+import pgfa.utils
+from pgfa.utils import Timer
+import yaml
+import numpy as np
+import pandas as pd
+import h5py
+import os
+os.environ["NUMEXPR_NUM_THREADS"] = "1"
+os.environ["NUMBA_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["OMP_NUM_THREADS"] = "1"
 
 
 def main(args):
-    with open(args.config_file, 'r') as fh:
+    with open(args.config_file, "r") as fh:
         config = yaml.load(fh, Loader=yaml.FullLoader)
 
     if args.seed is not None:
@@ -28,18 +25,20 @@ def main(args):
 
     model = get_model(
         data,
-        config['model']['K']
+        config["model"]["K"]
     )
 
-    model_updater = get_model_updater(config['sampler'][args.sampler_id], config['model']['K'])
+    model_updater = get_model_updater(config["sampler"][args.sampler_id], config["model"]["K"])
 
-    df = run(model, model_updater, time=config['run']['max_time'])
+    df = run(model, model_updater, time=config["run"]["max_time"])
 
-    df['restart_seed'] = args.seed
+    df["data_file"] = os.path.basename(args.data_file)
 
-    df['sampler'] = args.sampler_id
+    df["restart_seed"] = args.seed
 
-    df.to_csv(args.out_file, compression='gzip', index=False, sep='\t')
+    df["sampler"] = args.sampler_id
+
+    df.to_csv(args.out_file, compression="gzip", index=False, sep="\t")
 
 
 def get_model(data, num_features):
@@ -49,17 +48,17 @@ def get_model(data, num_features):
 
 
 def get_model_updater(config, num_features):
-    feat_alloc_updater_kwargs = config.get('kwargs', {})
+    feat_alloc_updater_kwargs = config.get("kwargs", {})
 
     if num_features is None:
-        feat_alloc_updater_kwargs['singletons_updater'] = pgfa.models.pyclone.singletons_updates.PriorSingletonsUpdater()
+        feat_alloc_updater_kwargs["singletons_updater"] = pgfa.models.pyclone.singletons_updates.PriorSingletonsUpdater()
 
     else:
-        feat_alloc_updater_kwargs['singletons_updater'] = None
+        feat_alloc_updater_kwargs["singletons_updater"] = None
 
     feat_alloc_updater = pgfa.utils.get_feat_alloc_updater(
-        mixture_prob=config.get('mixture_prob', 0.0),
-        updater=config['updater'],
+        mixture_prob=config.get("mixture_prob", 0.0),
+        updater=config["updater"],
         updater_kwargs=feat_alloc_updater_kwargs
     )
 
@@ -114,34 +113,34 @@ def run(model, model_updater, time=100):
 
     df = pd.DataFrame(trace)
 
-    df = df[['time', 'num_features', 'num_features_used', 'log_p']]
+    df = df[["time", "num_features", "num_features_used", "log_p"]]
 
     return df
 
 
 def _get_trace_row(model, time):
     return {
-        'log_p': model.log_p,
-        'time': time,
-        'num_features': model.params.K,
-        'num_features_used': np.sum(np.sum(model.params.Z, axis=0) > 0)
+        "log_p": model.log_p,
+        "time": time,
+        "num_features": model.params.K,
+        "num_features_used": np.sum(np.sum(model.params.Z, axis=0) > 0)
     }
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('-c', '--config-file', required=True)
+    parser.add_argument("-c", "--config-file", required=True)
 
-    parser.add_argument('-d', '--data-file', required=True)
+    parser.add_argument("-d", "--data-file", required=True)
 
-    parser.add_argument('-o', '--out-file', required=True)
+    parser.add_argument("-o", "--out-file", required=True)
 
-    parser.add_argument('-s', '--sampler-id', required=True)
+    parser.add_argument("-s", "--sampler-id", required=True)
 
-    parser.add_argument('--seed', default=None, type=int)
+    parser.add_argument("--seed", default=None, type=int)
 
     cli_args = parser.parse_args()
 

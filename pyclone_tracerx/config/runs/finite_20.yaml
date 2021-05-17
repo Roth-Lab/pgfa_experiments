@@ -1,14 +1,20 @@
 model:
-  K: 5
+  K: 12
 run:
-  max_time: 120
-  num_restarts: 2
+  max_time: 50000
+  num_restarts: 5
 sampler:
   gibbs:
     updater: g
-  row-gibbs:
-    updater: rg
   pg:
+    updater: pg
+    kwargs:
+      annealing_power: 1.0
+      num_particles: 20
+      resample_scheme: multinomial
+      resample_threshold: 0.5
+      test_path: zeros
+  pg-stratified:
     updater: pg
     kwargs:
       annealing_power: 1.0

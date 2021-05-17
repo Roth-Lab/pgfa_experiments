@@ -1,0 +1,3 @@
+runs:
+  finite_20:
+    config_file: config/runs/finite_20.yaml

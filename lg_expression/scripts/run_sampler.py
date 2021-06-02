@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import yaml
 
+from pgfa.models.trace import TraceWriter
 from pgfa.utils import Timer
 
 import pgfa.feature_allocation_distributions
@@ -32,7 +33,11 @@ def main(args):
 
     model_updater = get_model_updater(config["sampler"][args.sampler_id], config["model"]["K"])
 
-    df = run(data_true, model, model_updater, time=config["run"]["max_time"])
+    trace_writer = TraceWriter(args.trace_file, model)
+
+    df = run(data_true, model, model_updater, trace_writer, time=config["run"]["max_time"])
+
+    trace_writer.close()
 
     df["dataset"] = os.path.basename(args.data_file).split(".")[0]
 
@@ -53,7 +58,7 @@ def get_model_updater(config, num_features):
     feat_alloc_updater_kwargs = config.get("kwargs", {})
 
     if num_features is None:
-        feat_alloc_updater_kwargs["singletons_updater"] = pgfa.models.linear_gaussian.CollapsedSingletonsUpdater()
+        feat_alloc_updater_kwargs["singletons_updater"] = pgfa.models.linear_gaussian.PriorSingletonsUpdater()
 
     else:
         feat_alloc_updater_kwargs["singletons_updater"] = None
@@ -81,7 +86,7 @@ def load_data(file_name):
     return data, data_true
 
 
-def run(data_true, model, model_updater, time=100):
+def run(data_true, model, model_updater, trace_writer, time=100):
     timer = Timer()
 
     trace = [_get_trace_row(data_true, model, 0.0)]
@@ -92,6 +97,8 @@ def run(data_true, model, model_updater, time=100):
         model_updater.update(model)
 
         timer.stop()
+
+        trace_writer.write_row(model, timer.elapsed)
 
         trace.append(_get_trace_row(data_true, model, timer.elapsed))
 
@@ -106,7 +113,7 @@ def run(data_true, model, model_updater, time=100):
 
 
 def compute_l2_error(data, data_true, params):
-    idxs = np.isnan(data)
+    idxs = np.isnan(data) & (np.logical_not(np.isnan(data_true)))
 
     if not np.any(idxs):
         return 0
@@ -136,6 +143,8 @@ if __name__ == "__main__":
     parser.add_argument("-d", "--data-file", required=True)
 
     parser.add_argument("-o", "--out-file", required=True)
+
+    parser.add_argument("-t", "--trace-file", required=True)
 
     parser.add_argument("-s", "--sampler-id", required=True)
 

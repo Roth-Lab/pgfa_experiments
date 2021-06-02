@@ -29,6 +29,10 @@ run_template = os.path.join(
     tmp_dir, "{run}", "{dataset}", "{sampler}", "{restart}.tsv.gz"
 )
 
+trace_template = os.path.join(
+    out_dir, "{run}", "{dataset}", "{sampler}", "{restart}.h5"
+)
+
 results_template = os.path.join(out_dir, "{run}", "results.tsv.gz")
 
 
@@ -76,7 +80,8 @@ rule run_sampler:
         config = run_config_template,
         data = data_template
     output:
-        temp(run_template)
+        summary_file = temp(run_template),
+        trace_file = trace_template
     conda:
         "envs/pgfa.yaml"
     params:
@@ -89,7 +94,8 @@ rule run_sampler:
         "-c {input.config} "
         "-d {input.data} "
         "-s {params.sampler_id} "
-        "-o {output} "
+        "-o {output.summary_file} "
+        "-t {output.trace_file} "
         "--seed {params.seed} "
 
 rule merge_results:

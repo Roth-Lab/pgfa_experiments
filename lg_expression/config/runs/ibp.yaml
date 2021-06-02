@@ -1,7 +1,7 @@
 model:
   K: ibp
 run:
-  max_time: 50000
+  max_time: 1000
   num_restarts: 5
 sampler:
   gibbs:

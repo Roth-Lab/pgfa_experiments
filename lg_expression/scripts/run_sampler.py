@@ -58,7 +58,7 @@ def get_model_updater(config, num_features):
     feat_alloc_updater_kwargs = config.get("kwargs", {})
 
     if num_features is None:
-        feat_alloc_updater_kwargs["singletons_updater"] = pgfa.models.linear_gaussian.PriorSingletonsUpdater()
+        feat_alloc_updater_kwargs["singletons_updater"] = pgfa.models.linear_gaussian.CollapsedSingletonsUpdater()
 
     else:
         feat_alloc_updater_kwargs["singletons_updater"] = None

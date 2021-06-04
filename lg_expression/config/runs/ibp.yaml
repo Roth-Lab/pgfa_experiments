@@ -1,5 +1,5 @@
 model:
-  K: ibp
+  K: null
 run:
   max_time: 50000
   num_restarts: 5

@@ -71,6 +71,7 @@ def get_model_updater(config, num_features):
         feat_alloc_updater_kwargs["singletons_updater"] = None
 
     feat_alloc_updater = pgfa.utils.get_feat_alloc_updater(
+        annealing_iters=config.get("annealing_iters", 1),
         annealing_steps=config.get("annealing_steps", 1),
         mixture_prob=config.get("mixture_prob", 0.0),
         updater=config["updater"],
@@ -97,9 +98,24 @@ def load_params(file_name):
 
 
 def run(data_true, model, model_updater, params_true, time=100):
+    trace = [_get_trace_row(data_true, model, params_true, 0.0)]
+
+    # Run annealing if required
     timer = Timer()
 
-    trace = [_get_trace_row(data_true, model, params_true, 0.0)]
+    while model_updater.feat_alloc_updater.annealing_schedule(model_updater.feat_alloc_updater.iter) < 1.0:
+        timer.start()
+
+        model_updater.update(model)
+
+        timer.stop()
+
+        trace.append(_get_trace_row(data_true, model, params_true, timer.elapsed, annealed=True))
+
+    annealing_time = timer.elapsed
+
+    # Main run
+    timer = Timer()
 
     while timer.elapsed < time:
         timer.start()
@@ -108,17 +124,31 @@ def run(data_true, model, model_updater, params_true, time=100):
 
         timer.stop()
 
-        trace.append(_get_trace_row(data_true, model, params_true, timer.elapsed))
+        trace.append(_get_trace_row(data_true, model, params_true, timer.elapsed, annealed=False))
 
     df = pd.DataFrame(trace)
 
     model.params = params_true
 
+    df["annealing_time"] = annealing_time
+
     df["log_p_true"] = model.log_p
 
     df["rel_log_p"] = (df["log_p"] - df["log_p_true"]) / df["log_p_true"].abs()
 
-    df = df[["time", "num_features", "log_p", "log_p_true", "rel_log_p", "b_cubed_f", "b_cubed_p", "b_cubed_r", "rmse"]]
+    df = df[[
+        "annealed",
+        "time",
+        "annealing_time",
+        "num_features",
+        "log_p",
+        "log_p_true",
+        "rel_log_p",
+        "b_cubed_f",
+        "b_cubed_p",
+        "b_cubed_r",
+        "rmse"
+    ]]
 
     return df
 
@@ -134,7 +164,7 @@ def _compute_rmse(data_true, model):
     return np.sqrt(np.mean(np.square(data_pred[idxs] - data_true[idxs])))
 
 
-def _get_trace_row(data_true, model, params_true, time):
+def _get_trace_row(data_true, model, params_true, time, annealed=False):
     f, p, r = pgfa.utils.get_b_cubed_score(params_true.Z, model.params.Z)
 
     return {
@@ -144,7 +174,8 @@ def _get_trace_row(data_true, model, params_true, time):
         "b_cubed_f": f,
         "b_cubed_p": p,
         "b_cubed_r": r,
-        "rmse": _compute_rmse(data_true, model)
+        "rmse": _compute_rmse(data_true, model),
+        "annealed": annealed
     }
 
 

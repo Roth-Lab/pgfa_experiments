@@ -17,8 +17,9 @@ sampler:
   gibbs:
     updater: g
   gibbs-annealed:
-    annealing_steps: 1000
-    updater: g    
+    annealing_iters: 100
+    annealing_steps: 100
+    updater: g
   pg:
     updater: pg
     kwargs:

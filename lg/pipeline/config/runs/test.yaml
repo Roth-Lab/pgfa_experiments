@@ -15,7 +15,8 @@ run:
   num_restarts: 2
 sampler:
   gibbs-annealed:
-    annealing_steps: 1000
+    annealing_iters: 10
+    annealing_steps: 10
     updater: g
   gibbs:
     updater: g

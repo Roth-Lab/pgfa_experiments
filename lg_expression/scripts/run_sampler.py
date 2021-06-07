@@ -33,6 +33,8 @@ def main(args):
 
     model_updater = get_model_updater(config["sampler"][args.sampler_id], config["model"]["K"])
 
+    model_updater._update_model_params(model)
+
     trace_writer = TraceWriter(args.trace_file, model)
 
     df = run(data_true, model, model_updater, trace_writer, time=config["run"]["max_time"])

@@ -2,3 +2,4 @@
 /.pydevproject
 *.snakemake*
 *snakejob*
+*slurm*

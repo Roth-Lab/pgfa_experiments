@@ -1,5 +1,5 @@
 runs:
   finite_20:
     config_file: config/runs/finite_20.yaml
-  ibp:
-    config_file: config/runs/ibp.yaml
+#  ibp:
+#    config_file: config/runs/ibp.yaml

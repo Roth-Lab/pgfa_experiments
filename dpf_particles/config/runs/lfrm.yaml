@@ -1,0 +1,20 @@
+model_class: lfrm
+data:
+  K: 20
+  N: 100
+  alpha: 2
+  prop_missing: 0.05
+  symmetric: false
+  tau: 0.25
+model:
+  K: 20
+run:
+  max_time: 10000
+  num_datasets: 4
+  num_init_params: 4
+  num_restarts: 5
+num_particles:
+  - 5
+  - 10
+  - 20
+  - 50

@@ -1,0 +1,16 @@
+model_class: pyclone
+data:
+  D: 10
+  K: 12
+  N: 200
+  alpha: 2
+model:
+  K: 12
+run:
+  max_time: 2
+  num_datasets: 2
+  num_init_params: 2
+  num_restarts: 2
+num_particles:
+  - 2
+  - 5

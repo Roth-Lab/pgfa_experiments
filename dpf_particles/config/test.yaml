@@ -1,0 +1,7 @@
+runs:
+  lfrm:
+    config_file: config/runs/test_lfrm.yaml
+  lg:
+    config_file: config/runs/test_lg.yaml
+  pylcone:
+    config_file: config/runs/test_pyclone.yaml

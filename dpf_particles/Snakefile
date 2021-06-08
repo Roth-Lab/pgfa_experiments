@@ -1,0 +1,130 @@
+import itertools
+import os
+import shutil
+import yaml
+
+# Setup
+out_dir = config['out_dir']
+
+config['run_config'] = {}
+
+for run_id in config['runs']:
+    with open(config['runs'][run_id]['config_file']) as fh:
+        config['run_config'][run_id] = yaml.load(fh, Loader=yaml.FullLoader)
+
+# Templates
+tmp_dir = os.path.join(out_dir,  'tmp')
+
+run_config_template = os.path.join(out_dir, "{run}", 'config.yaml')
+
+data_template = os.path.join(out_dir, "{run}", "data", "{dataset}.h5")
+
+params_template = os.path.join(out_dir, "{run}", "params", "{params}.h5")
+
+run_template = os.path.join(
+    tmp_dir, "{run}", "{dataset}", "{params}", "{num_particles}", "{restart}.tsv.gz"
+)
+
+results_template = os.path.join(out_dir, "{run}", "results.tsv.gz")
+
+
+def load_run_files(wildcards):
+    files = []
+    run_config = config['run_config'][wildcards.run]
+    iter = itertools.product(
+        range(run_config['run']['num_datasets']),
+        range(run_config['run']['num_init_params']),
+        range(run_config['run']['num_restarts']),
+        run_config['num_particles']
+    )
+    for d, p, r, n in iter:
+        files.append(
+            run_template.format(
+                run=wildcards.run,
+                dataset=d,
+                params=p,
+                restart=r,
+                num_particles=n
+            )
+        )
+    return files
+
+# Workflow
+localrules: all, write_run_config
+
+rule all:
+    input:
+        expand(results_template, run=config['runs'].keys())
+    shell:
+        "rm -rf {}".format(tmp_dir)
+
+rule write_run_config:
+    input:
+        lambda wildcards: config['runs'][wildcards.run]['config_file']
+    output:
+        run_config_template
+    conda:
+        "envs/pgfa.yaml"
+    shell:
+        "cp {input} {output}"
+
+rule simulate_data:
+    input:
+        run_config_template
+    output:
+        data_template
+    conda:
+        "envs/pgfa.yaml"
+    params:
+        seed="{dataset}"
+    shell:
+        "python scripts/simulate_data.py "
+        "-c {input} "
+        "-o {output} "
+        "--seed {params.seed}"
+
+rule simulate_params:
+    input:
+        run_config_template
+    output:
+        params_template
+    conda:
+        "envs/pgfa.yaml"
+    params:
+        seed="{params}"
+    shell:
+        "python scripts/simulate_params.py "
+        "-c {input} "
+        "-o {output} "
+        "--seed {params.seed}"
+
+rule run_sampler:
+    input:
+        config=run_config_template,
+        data=data_template,
+        params=params_template
+    output:
+        temp(run_template)
+    conda:
+        "envs/pgfa.yaml"
+    params:
+        num_particles="{num_particles}",
+        seed="{restart}"
+    shell:
+        "python scripts/run_sampler.py "
+        "-c {input.config} "
+        "-d {input.data} "
+        "-p {input.params} "
+        "-n {params.num_particles} "
+        "-o {output} "
+        "--seed {params.seed} "
+
+rule merge_results:
+    input:
+        load_run_files
+    output:
+        results_template
+    conda:
+        "envs/pgfa.yaml"
+    shell:
+        "python scripts/merge_results.py -i {input} -o {output}"

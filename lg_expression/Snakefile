@@ -20,7 +20,7 @@ run_config_template = os.path.join(out_dir, "{run}", 'config.yaml')
 
 datasets = []
 
-for file_name in glob.glob("data/*.tsv.gz"):
+for file_name in ["data/brca.tsv.gz"]:
     datasets.append(os.path.basename(file_name).split(".")[0])
 
 data_template = os.path.join("data", "{dataset}.tsv.gz")

@@ -75,7 +75,7 @@ def get_model_updater(config, num_features):
 
 
 def load_data(file_name):
-    df = pd.read_csv(file_name, index_col=0, sep="\t")
+    df = pd.read_csv(file_name, index_col=[0, 1], sep="\t")
 
     data_true = df.T.values
 

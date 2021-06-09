@@ -2,7 +2,8 @@ model:
   K: 20
 run:
   max_time: 50000
-  num_restarts: 10
+  num_params: 4
+  num_restarts: 5
 sampler:
   gibbs:
     updater: g

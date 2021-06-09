@@ -1,13 +1,12 @@
 model:
-  K: 5
+  K: 20
 run:
-  max_time: 20
+  max_time: 2
+  num_params: 2
   num_restarts: 2
 sampler:
   gibbs:
     updater: g
-  row-gibbs:
-    updater: rg
   pg:
     updater: pg
     kwargs:

@@ -33,6 +33,8 @@ def main(args):
 
     model_updater = get_model_updater(config["sampler"][args.sampler_id], config["model"]["K"])
 
+    model.params = load_params(args.params_file)
+
     model_updater._update_model_params(model)
 
     trace_writer = TraceWriter(args.trace_file, model)
@@ -42,6 +44,8 @@ def main(args):
     trace_writer.close()
 
     df["dataset"] = os.path.basename(args.data_file).split(".")[0]
+
+    df["params_seed"] = os.path.splitext(os.path.basename(args.params_file))[0]
 
     df["restart_seed"] = args.seed
 
@@ -86,6 +90,22 @@ def load_data(file_name):
     data[mask] = np.nan
 
     return data, data_true
+
+
+def load_params(file_name):
+    with h5py.File(file_name, "r") as fh:
+        params = pgfa.models.linear_gaussian.Parameters(
+            fh["alpha"][()],
+            np.ones(2),
+            fh["tau_v"][()],
+            np.ones(2),
+            fh["tau_x"][()],
+            np.ones(2),
+            fh["V"][()],
+            fh["Z"][()]
+        )
+
+    return params
 
 
 def run(data_true, model, model_updater, trace_writer, time=100):
@@ -143,6 +163,8 @@ if __name__ == "__main__":
     parser.add_argument("-c", "--config-file", required=True)
 
     parser.add_argument("-d", "--data-file", required=True)
+
+    parser.add_argument("-p", "--params-file", required=True)
 
     parser.add_argument("-o", "--out-file", required=True)
 

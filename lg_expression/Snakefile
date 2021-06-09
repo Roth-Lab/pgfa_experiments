@@ -25,12 +25,16 @@ for file_name in ["data/brca.tsv.gz"]:
 
 data_template = os.path.join("data", "{dataset}.tsv.gz")
 
+params_template = os.path.join(
+    out_dir, "{run}", "{dataset}", "params", "{params}.h5"
+)
+
 run_template = os.path.join(
-    tmp_dir, "{run}", "{dataset}", "{sampler}", "{restart}.tsv.gz"
+    tmp_dir, "{run}", "{dataset}", "{sampler}", "{params}", "{restart}.tsv.gz"
 )
 
 trace_template = os.path.join(
-    out_dir, "{run}", "{dataset}", "{sampler}", "{restart}.h5"
+    out_dir, "{run}", "{dataset}", "{sampler}", "{params}", "{restart}.h5"
 )
 
 results_template = os.path.join(out_dir, "{run}", "results.tsv.gz")
@@ -41,14 +45,16 @@ def load_run_files(wildcards):
     run_config = config['run_config'][wildcards.run]
     iter = itertools.product(
         datasets,
+        range(run_config['run']['num_params']),
         range(run_config['run']['num_restarts']),
         run_config['sampler'].keys()
     )
-    for d, r, s in iter:
+    for d, p, r, s in iter:
         files.append(
             run_template.format(
                 run=wildcards.run,
                 dataset=d,
+                params=p,
                 sampler=s,
                 restart=r
             )
@@ -75,10 +81,22 @@ rule write_run_config:
     shell:
         "cp {input} {output}"
 
-rule run_sampler:
+rule write_params:
     input:
         config = run_config_template,
         data = data_template
+    output:
+        params_template
+    conda:
+        "envs/pgfa.yaml"
+    shell:
+        "python scripts/init_params.py -c {input.config} -d {input.data} -o {output} --seed {wildcards.params}"
+
+rule run_sampler:
+    input:
+        config = run_config_template,
+        data = data_template,
+        params = params_template
     output:
         summary_file = temp(run_template),
         trace_file = trace_template
@@ -93,6 +111,7 @@ rule run_sampler:
         "python scripts/run_sampler.py "
         "-c {input.config} "
         "-d {input.data} "
+        "-p {input.params} "
         "-s {params.sampler_id} "
         "-o {output.summary_file} "
         "-t {output.trace_file} "

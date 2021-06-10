@@ -1,0 +1,10 @@
+{
+    "__default__":
+    {
+        "mem": "4G"
+    },
+    "merge_results":
+    {
+        "mem": "16G"
+    }
+}

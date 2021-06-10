@@ -1,0 +1,97 @@
+import glob
+import itertools
+import os
+import shutil
+import yaml
+
+# Setup
+out_dir = config["out_dir"]
+
+config["run_config"] = {}
+
+for run_id in config["runs"]:
+    with open(config["runs"][run_id]["config_file"]) as fh:
+        config["run_config"][run_id] = yaml.load(fh, Loader=yaml.FullLoader)
+
+# Templates
+tmp_dir = os.path.join(out_dir,  "tmp")
+
+run_config_template = os.path.join(out_dir, "{run}", "config.yaml")
+
+data_file = "data/data.tsv.gz"
+
+gt_file = "data/gt.tsv.gz"
+
+
+run_template = os.path.join(
+    tmp_dir, "{run}", "{sampler}", "{restart}.tsv.gz"
+)
+
+results_template = os.path.join(out_dir, "{run}", "results.tsv.gz")
+
+
+def load_run_files(wildcards):
+    files=[]
+    run_config=config["run_config"][wildcards.run]
+    iter=itertools.product(
+        range(run_config["run"]["num_restarts"]),
+        run_config["sampler"].keys()
+    )
+    for r, s in iter:
+        files.append(
+            run_template.format(
+                run=wildcards.run,
+                sampler=s,
+                restart=r
+            )
+        )
+    return files
+
+
+# Workflow
+localrules: all, write_run_config
+
+rule all:
+    input:
+        expand(results_template, run=config["runs"].keys())
+    shell:
+        "rm -rf {}".format(tmp_dir)
+
+rule write_run_config:
+    input:
+        lambda wildcards: config["runs"][wildcards.run]["config_file"]
+    output:
+        run_config_template
+    shell:
+        "cp {input} {output}"
+
+rule run_sampler:
+    input:
+        config = run_config_template,
+        data = data_file,
+        gt = gt_file
+    output:
+        temp(run_template)
+    params:
+        sampler_id = "{sampler}",
+        seed = "{restart}"
+    conda:
+        "envs/pgfa.yaml"
+    shell:
+        "python scripts/run_sampler.py "
+        "-c {input.config} "
+        "-d {input.data} "
+        "-g {input.gt} "
+        "-s {params.sampler_id} "
+        "-o {output} "
+        "--seed {params.seed} "
+
+rule merge_results:
+    input:
+        load_run_files
+    output:
+        results_template
+    conda:
+        "envs/pgfa.yaml"
+    shell:
+        "python scripts/merge_results.py -i {input} -o {output}"

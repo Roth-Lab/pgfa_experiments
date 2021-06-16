@@ -75,6 +75,8 @@ def load_data(data_file, gt_file):
 
     samples = df["sample_id"].unique()
 
+    df = df.groupby("mutation_id").filter(lambda x: np.all(x["cn"] <= 2))
+
     df = df.groupby("mutation_id").filter(lambda x: x["sample_id"].nunique() == len(samples))
 
     gt = gt.loc[df["mutation_id"].unique()]

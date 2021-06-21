@@ -24,7 +24,7 @@ def main(args):
     if args.seed is not None:
         pgfa.utils.set_seed(args.seed)
 
-    data, gt = load_data(args.data_file, args.ground_truth_file)
+    data, gt, num_samples = load_data(args.data_file, args.ground_truth_file)
 
     model = get_model(
         data,
@@ -34,6 +34,10 @@ def main(args):
     model_updater = get_model_updater(config["sampler"][args.sampler_id], config["model"]["K"])
 
     df = run(gt, model, model_updater, time=config["run"]["max_time"])
+
+    df["dataset"] = args.dataset
+
+    df["num_samples"] = num_samples
 
     df["data_file"] = os.path.basename(args.data_file)
 
@@ -105,7 +109,7 @@ def load_data(data_file, gt_file):
 
         data.append(pgfa.models.pyclone.utils.DataPoint(mutation_data))
 
-    return data, gt
+    return data, gt, len(samples)
 
 
 def run(gt, model, model_updater, time=100):
@@ -157,6 +161,8 @@ if __name__ == "__main__":
     parser.add_argument("-o", "--out-file", required=True)
 
     parser.add_argument("-s", "--sampler-id", required=True)
+
+    parser.add_argument("--dataset", required=True)
 
     parser.add_argument("--seed", default=None, type=int)
 

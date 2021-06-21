@@ -1,3 +1,5 @@
+from snakemake.remote.HTTP import RemoteProvider as HTTPRemoteProvider
+
 import glob
 import itertools
 import os
@@ -16,31 +18,96 @@ for run_id in config["runs"]:
 # Templates
 tmp_dir = os.path.join(out_dir,  "tmp")
 
-run_config_template = os.path.join(out_dir, "{run}", "config.yaml")
+data_dir = os.path.join(out_dir, "data")
 
-data_file = "data/data.tsv.gz"
+cn_file = os.path.join(data_dir, "cell_cn.csv.gz")
 
-gt_file = "data/gt.tsv.gz"
+clone_file = os.path.join(data_dir, "cell_to_clone.csv.gz")
 
+clone_snv_file = os.path.join(data_dir, "clone_snv.csv.gz")
 
-run_template = os.path.join(
-    tmp_dir, "{run}", "{sampler}", "{restart}.tsv.gz"
+snv_counts_file = os.path.join(data_dir, "cell_snv_counts.csv.gz")
+
+run_config_template = os.path.join(out_dir, "runs", "{run}", "config.yaml")
+
+run_dir = os.path.join(
+    out_dir, "runs", "{run}", "num_samples_{num_samples}", "dataset_{dataset}"
 )
 
-results_template = os.path.join(out_dir, "{run}", "results.tsv.gz")
+ccf_template = os.path.join(
+    run_dir, "data", "ccf.tsv.gz"
+)
+
+
+data_template = os.path.join(
+    run_dir, "data", "data.tsv.gz"
+)
+
+ground_truth_template = os.path.join(
+    run_dir, "data", "ground_truth.tsv.gz"
+)
+
+run_template = os.path.join(
+    run_dir, "{sampler}", "{restart}.tsv.gz"
+)
+
+results_template = os.path.join(out_dir, "results", "{run}.tsv.gz")
+
+
+def load_output_files():
+    files = []
+
+    for r in config["runs"]:
+        run_config = config["run_config"][r]
+
+        iter = itertools.product(
+            range(run_config["run"]["num_data_sets"]),
+            run_config["run"]["num_samples"]
+        )
+
+        for d, s in iter:
+            files.append(
+                ccf_template.format(
+                    run=r,
+                    dataset=d,
+                    num_samples=s
+                )
+            )
+
+            files.append(
+                data_template.format(
+                    run=r,
+                    dataset=d,
+                    num_samples=s
+                )
+            )
+
+            files.append(
+                ground_truth_template.format(
+                    run=r,
+                    dataset=d,
+                    num_samples=s
+                )
+            )
+
+    return files
 
 
 def load_run_files(wildcards):
-    files=[]
-    run_config=config["run_config"][wildcards.run]
-    iter=itertools.product(
+    files = []
+    run_config = config["run_config"][wildcards.run]
+    iter = itertools.product(
+        range(run_config["run"]["num_data_sets"]),
+        run_config["run"]["num_samples"],
         range(run_config["run"]["num_restarts"]),
         run_config["sampler"].keys()
     )
-    for r, s in iter:
+    for d, n, r, s in iter:
         files.append(
             run_template.format(
                 run=wildcards.run,
+                dataset=d,
+                num_samples=n,
                 sampler=s,
                 restart=r
             )
@@ -48,14 +115,72 @@ def load_run_files(wildcards):
     return files
 
 
+HTTP = HTTPRemoteProvider()
+
 # Workflow
-localrules: all, write_run_config
+localrules: all, write_run_config, download_files
 
 rule all:
     input:
         expand(results_template, run=config["runs"].keys())
+    # shell:
+    #     "rm -rf {}".format(tmp_dir)
+
+rule download_clone_file:
+    input:
+        HTTP.remote("zenodo.org/record/3445364/files/ov2295_clone_clusters.csv.gz", keep_local=True)
+    output:
+        clone_file
     shell:
-        "rm -rf {}".format(tmp_dir)
+        "mv {input} {output}"
+
+rule download_clone_snv_file:
+    input:
+        HTTP.remote("zenodo.org/record/3445364/files/ov2295_clone_snvs.csv.gz", keep_local=True)
+    output:
+        clone_snv_file
+    shell:
+        "mv {input} {output}"
+
+rule download_cn_file:
+    input:
+        HTTP.remote("zenodo.org/record/3445364/files/ov2295_cell_cn.csv.gz", keep_local=True)
+    output:
+        cn_file
+    shell:
+        "mv {input} {output}"
+
+rule download_snv_counts_file:
+    input:
+        HTTP.remote("zenodo.org/record/3445364/files/ov2295_snv_counts.csv.gz", keep_local=True)
+    output:
+        snv_counts_file
+    shell:
+        "mv {input} {output}"
+
+rule build_input_file:
+    input:
+        clone = clone_file,
+        clone_snv = clone_snv_file,
+        cn = cn_file,
+        snv = snv_counts_file
+    output:
+        ccf = ccf_template,
+        data = data_template,
+        ground_truth = ground_truth_template
+    conda:
+        "envs/pgfa.yaml"
+    shell:
+        "python scripts/build_input_file.py "
+        "--clone-file {input.clone} "
+        "--clone-snv-file {input.clone_snv} "
+        "--cn-file {input.cn} "
+        "--snv-file {input.snv} "
+        "--out-ccf-file {output.ccf} "
+        "--out-data-file {output.data} "
+        "--out-ground-truth-file {output.ground_truth} "
+        "--num-samples {wildcards.num_samples} "
+        "--seed {wildcards.dataset}"
 
 rule write_run_config:
     input:
@@ -68,8 +193,8 @@ rule write_run_config:
 rule run_sampler:
     input:
         config = run_config_template,
-        data = data_file,
-        gt = gt_file
+        data = data_template,
+        ground_truth = ground_truth_template
     output:
         temp(run_template)
     params:
@@ -81,9 +206,10 @@ rule run_sampler:
         "python scripts/run_sampler.py "
         "-c {input.config} "
         "-d {input.data} "
-        "-g {input.gt} "
+        "-g {input.ground_truth} "
         "-s {params.sampler_id} "
         "-o {output} "
+        "--dataset {wildcards.dataset} "
         "--seed {params.seed} "
 
 rule merge_results:

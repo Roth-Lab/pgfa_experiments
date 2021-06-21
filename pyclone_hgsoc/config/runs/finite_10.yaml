@@ -2,7 +2,11 @@ model:
   K: 10
 run:
   max_time: 10000
+  num_data_sets: 2
   num_restarts: 10
+  num_samples:
+    - 4
+    - 8  
 sampler:
   gibbs:
     updater: g

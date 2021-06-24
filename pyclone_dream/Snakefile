@@ -1,0 +1,104 @@
+import glob
+import itertools
+import os
+import pandas as pd
+import shutil
+import yaml
+
+# Setup
+out_dir = config["out_dir"]
+
+config["run_config"] = {}
+
+for run_id in config["runs"]:
+    with open(config["runs"][run_id]["config_file"]) as fh:
+        config["run_config"][run_id] = yaml.load(fh, Loader=yaml.FullLoader)
+
+
+datasets = []
+
+for file_name in glob.glob(os.path.join("data", "input", "*.tsv")):
+    if pd.read_csv(file_name, sep="\t").shape[0] >= 10000:
+        continue
+
+    datasets.append(os.path.basename(file_name).split(".")[0])
+
+data_template = os.path.join("data", "input", "{dataset}.tsv")
+
+ground_truth_template = os.path.join("data", "ground_truth", "{dataset}-noXY.tsv")
+
+# Templates
+run_config_template = os.path.join(out_dir, "runs", "{run}", "config.yaml")
+
+run_template = os.path.join(
+    out_dir, "runs", "{run}", "{dataset}", "{sampler}", "{restart}.tsv.gz"
+)
+
+results_template = os.path.join(out_dir, "results", "{run}.tsv.gz")
+
+
+def load_run_files(wildcards):
+    files = []
+    run_config = config["run_config"][wildcards.run]
+    iter = itertools.product(
+        datasets,
+        range(run_config["run"]["num_restarts"]),
+        run_config["sampler"].keys()
+    )
+
+    for d, r, s in iter:
+        files.append(
+            run_template.format(
+                run=wildcards.run,
+                dataset=d,
+                sampler=s,
+                restart=r
+            )
+        )
+
+    return files
+
+
+# Workflow
+localrules: all, write_run_config
+
+rule all:
+    input:
+        expand(results_template, run=config["runs"].keys())
+
+rule write_run_config:
+    input:
+        lambda wildcards: config["runs"][wildcards.run]["config_file"]
+    output:
+        run_config_template
+    shell:
+        "cp {input} {output}"
+
+rule run_sampler:
+    input:
+        config = run_config_template,
+        data = data_template,
+        ground_truth = ground_truth_template
+    output:
+        run_template
+    conda:
+        "envs/pgfa.yaml"
+    shell:
+        "python scripts/run_sampler.py "
+        "-c {input.config} "
+        "-d {input.data} "
+        "-g {input.ground_truth} "
+        "-s {wildcards.sampler} "
+        "-o {output} "
+        "--dataset {wildcards.dataset} "
+        "--seed {wildcards.restart} "
+
+rule merge_results:
+    input:
+        load_run_files
+    output:
+        results_template
+    conda:
+        "envs/pgfa.yaml"
+    shell:
+        "python scripts/merge_results.py -i {input} -o {output}"

@@ -20,7 +20,7 @@ for run_id in config["runs"]:
 # Templates
 tmp_dir = os.path.join(out_dir,  "tmp")
 
-run_config_template = os.path.join(out_dir, "config", "{run}", "config.yaml")
+run_config_template = os.path.join(out_dir, "config", "{run}.yaml")
 
 datasets = {
     "yale_48": {

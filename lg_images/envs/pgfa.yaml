@@ -1,0 +1,16 @@
+channels:
+  - conda-forge
+dependencies:
+  - python<=3.9.4
+  - h5py
+  - numba
+  - numpy
+  - pandas
+  - pytables
+  - pyyaml
+  - scikit-image
+  - scikit-learn
+  - scipy
+  - pip
+  - pip:
+      - "git+ssh://git@github.com/Roth-Lab/pgfa.git@0.3.3"

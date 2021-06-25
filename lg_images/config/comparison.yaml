@@ -1,0 +1,9 @@
+runs:
+  finite_5:
+    config_file: config/runs/finite_5.yaml
+  finite_10:
+    config_file: config/runs/finite_10.yaml
+  finite_25:
+    config_file: config/runs/finite_25.yaml
+  ibp:
+   config_file:  config/runs/ibp.yaml

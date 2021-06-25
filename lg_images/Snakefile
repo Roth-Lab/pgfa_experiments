@@ -1,0 +1,174 @@
+from snakemake.remote.HTTP import RemoteProvider as HTTPRemoteProvider
+
+import glob
+import itertools
+import os
+import shutil
+import yaml
+
+# Setup
+out_dir = config["out_dir"]
+
+config["datasets"] = {}
+
+config["run_config"] = {}
+
+for run_id in config["runs"]:
+    with open(config["runs"][run_id]["config_file"]) as fh:
+        config["run_config"][run_id] = yaml.load(fh, Loader=yaml.FullLoader)
+
+# Templates
+tmp_dir = os.path.join(out_dir,  "tmp")
+
+run_config_template = os.path.join(out_dir, "{run}", "config.yaml")
+
+datasets = {
+    "yale_48": {
+        "size": 48,
+        "url": "http://vision.ucsd.edu/datasets/yale_face_dataset_original/yalefaces.zip"
+    }
+}
+
+data_download_template = os.path.join(out_dir, "data", "{dataset}.zip")
+
+dataset_dir = os.path.join(out_dir, "data", "{dataset}")
+
+data_template = os.path.join(out_dir, "data", "{dataset}.h5")
+
+params_template = os.path.join(
+    out_dir, "params", "{run}", "{dataset}", "params", "{params}.h5"
+)
+
+run_template = os.path.join(
+    tmp_dir, "{run}", "{dataset}", "{sampler}", "{params}", "{restart}.tsv.gz"
+)
+
+trace_template = os.path.join(
+    out_dir, "trace", "{run}", "{dataset}", "{sampler}", "{params}", "{restart}.h5"
+)
+
+results_template = os.path.join(out_dir, "results", "{run}.tsv.gz")
+
+
+def load_run_files(wildcards):
+    files = []
+    run_config = config["run_config"][wildcards.run]
+    iter = itertools.product(
+        datasets.keys(),
+        range(run_config["run"]["num_params"]),
+        range(run_config["run"]["num_restarts"]),
+        run_config["sampler"].keys()
+    )
+    for d, p, r, s in iter:
+        files.append(
+            run_template.format(
+                run=wildcards.run,
+                dataset=d,
+                params=p,
+                sampler=s,
+                restart=r
+            )
+        )
+    return files
+
+
+HTTP = HTTPRemoteProvider()
+
+# Workflow
+localrules: all, write_run_config, download_yale_data, unpack_yale_data
+
+rule all:
+    input:
+        expand(results_template, run=config["runs"].keys())
+    shell:
+        "rm -rf {}".format(tmp_dir)
+
+rule download_yale_data:
+    input:
+        lambda wc: HTTP.remote(datasets[wc.dataset]["url"], keep_local=True)
+    output:
+        temp(data_download_template)
+    shell:
+        "mv {input} {output}"
+
+rule unpack_yale_data:
+    input:
+        data_download_template
+    output:
+        directory(dataset_dir)
+    shell:
+        "mkdir -p {output}/tmp &&"
+        "unzip {input} -d {output}/tmp &&"
+        "mv {output}/tmp/yalefaces/* {output} &&"
+        "rm -rf {output}/tmp"
+
+rule build_input_file:
+    input:
+        dataset_dir
+    output:
+        data_template
+    params:
+        lambda wc: datasets[wc.dataset]["size"]
+    conda:
+        "envs/pgfa.yaml"
+    shell:
+        "python scripts/build_data_file.py -i {input} -o {output} -s {params}"
+
+
+rule write_run_config:
+    input:
+        lambda wildcards: config["runs"][wildcards.run]["config_file"]
+    output:
+        run_config_template
+    conda:
+        "envs/pgfa.yaml"
+    shell:
+        "cp {input} {output}"
+
+rule write_params:
+    input:
+        config = run_config_template,
+        data = data_template
+    output:
+        params_template
+    conda:
+        "envs/pgfa.yaml"
+    shell:
+        "python scripts/init_params.py -c {input.config} -d {input.data} -o {output} --seed {wildcards.params}"
+
+rule run_sampler:
+    input:
+        config = run_config_template,
+        data = data_template,
+        params = params_template
+    output:
+        summary_file = temp(run_template),
+        trace_file = trace_template
+    conda:
+        "envs/pgfa.yaml"
+    params:
+        sampler_id = "{sampler}",
+        seed = "{restart}"
+    conda:
+        "envs/pgfa.yaml"
+    shell:
+        "python scripts/run_sampler.py "
+        "-c {input.config} "
+        "-d {input.data} "
+        "-p {input.params} "
+        "-s {params.sampler_id} "
+        "-o {output.summary_file} "
+        "-t {output.trace_file} "
+        "--seed {params.seed} "
+
+rule merge_results:
+    input:
+        load_run_files
+    output:
+        results_template
+    conda:
+        "envs/pgfa.yaml"
+    conda:
+        "envs/pgfa.yaml"
+    shell:
+        "python scripts/merge_results.py -i {input} -o {output}"
